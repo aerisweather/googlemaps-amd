@@ -26,6 +26,30 @@ require.config({
 });
 ```
 
+## Install
+
+The easiest way to use the `googlemaps` plugin is to [download the source file](https://raw.github.com/hamweather/googlemaps-amd/master/src/googlemaps.js)
+
+### Using Bower
+
+The `googlemaps` plugin is registered as a Bower module. To install:
+
+```
+bower install googlemaps-amd
+```
+
+And don't forget to configure your paths:
+
+```javascript
+require.config({
+  paths: {
+    googlemaps: 'bower_components/googlemaps-amd/src/googlemaps',
+    async: 'bower_components/requirejs-plugins/src/async'
+  }
+});
+```
+
+
 ## Configuration
 
 By default, the `googlemaps` loader will pull in the Google Maps library from `https://maps.googleapis.com/maps/api/js?sensor=false`. However, the plugin can be configured with additional options:
