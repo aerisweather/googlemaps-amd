@@ -18,5 +18,11 @@
     "sinon": "http://sinonjs.org/releases/sinon-1.7.1.js",
     "requirejs": "~2.1.8",
     "underscore": "~1.5.2"
+  },
+  "location": "https://github.com/hamweather/googlemaps-amd.git",
+  "main": "src/googlemaps.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hamweather/googlemaps-amd.git"
   }
 }
