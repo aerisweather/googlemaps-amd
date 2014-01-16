@@ -47,7 +47,9 @@ require([
 
   require([
     // Test specs go here
-    'spec/mock/require'
+    'spec/mock/require',
+    'spec/googlemaps',
+    'spec/googlemaps-integration'
   ], function() {
     jasmineEnv.execute();
   });
