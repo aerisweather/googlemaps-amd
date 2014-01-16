@@ -3,7 +3,7 @@ require.config({
 
   paths: {
     // Vendor libraries
-    async: '../bower_components/requirejs-plugins/async',
+    async: '../bower_components/requirejs-plugins/src/async',
     sinon: '../bower_components/sinon/index',
     jasmine: '../bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': '../bower_components/jasmine/lib/jasmine-core/jasmine-html',
