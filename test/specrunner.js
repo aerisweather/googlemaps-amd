@@ -47,6 +47,7 @@ require([
 
   require([
     // Test specs go here
+    'spec/mock/require'
   ], function() {
     jasmineEnv.execute();
   });
