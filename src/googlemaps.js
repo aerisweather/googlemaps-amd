@@ -36,30 +36,37 @@ define([
    * See: https://github.com/amdjs/amdjs-api/wiki/Loader-Plugins#load-function-resourceid-require-load-config-
    */
   function loadGoogleMaps_(name, parentRequire, onload, opt_config) {
+    var isGoogleMapsAlreadyLoaded;
+    var config;
     var googleUrl;
     var onAsyncLoad;
-    var config = normalizeConfig_(opt_config);
-    var isGoogleMapsAlreadyLoaded = root.google && root.google.maps;
 
     // Do nothing during a build
-    if (config.isBuild) {
+    if (opt_config && opt_config.isBuild) {
       onload(null);
       return;
     }
 
+    // Grab default config values
+    config = normalizeConfig_(opt_config);
+
+    // Prevent duplicate loading of google maps
+    isGoogleMapsAlreadyLoaded = root.google && root.google.maps;
     if (isGoogleMapsAlreadyLoaded) {
       onload(root.google.maps);
       return;
     }
 
-    googleUrl = getGoogleUrl_(config.googlemaps);
-
+    // Setup async callback
+    // to resolve with google maps
     onAsyncLoad = function() {
       resolveWithGoogleMaps_(onload);
     };
     onAsyncLoad.onerror = onload.onerror;
 
-    (config.googlemaps.async || async).load(googleUrl, parentRequire, onAsyncLoad, config);
+    // Load google maps using async! plugin
+    googleUrl = getGoogleUrl_(config.googlemaps);
+    config.googlemaps.async.load(googleUrl, parentRequire, onAsyncLoad, config);
   }
 
 
@@ -68,6 +75,7 @@ define([
     config.googlemaps || (config.googlemaps = {});
     config.googlemaps.url || (config.googlemaps.url = GOOGLE_MAPS_URL);
     config.googlemaps.params = normalizeParams_(config.googlemaps.params);
+    config.googlemaps.async || (config.googlemaps.async = async);
 
     return config;
   }
