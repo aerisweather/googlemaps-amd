@@ -2,7 +2,6 @@ define([
   'async'
 ], function(async) {
   var root = this;
-  var GOOGLE_MAPS_URL = 'https://maps.googleapis.com/maps/api/js';
 
   /**
    * Google maps AMD loader plugin.
@@ -26,120 +25,135 @@ define([
    *  });
    *
    */
-  return {
-    load: loadGoogleMaps_
+  var googlemapsPlugin = {
+    load: function(name, parentRequire, onload, opt_config) {
+      var googleMapsLoader;
+      var config = opt_config || {};
+
+      if (config.isBuild) {
+        onload(null);
+        return;
+      }
+
+      googleMapsLoader = new GoogleMapsLoader(parentRequire, onload, config.googlemaps || {});
+      googleMapsLoader.load();
+    }
   };
 
+
   /**
-   * Main loader method.
-   * Implements the AMD loader plugin api load method.
-   * See: https://github.com/amdjs/amdjs-api/wiki/Loader-Plugins#load-function-resourceid-require-load-config-
+   * Helper class for googlemaps loader plugin.
    */
-  function loadGoogleMaps_(name, parentRequire, onload, opt_config) {
-    var isGoogleMapsAlreadyLoaded;
-    var config;
-    var googleUrl;
-    var onAsyncLoad;
+  var GoogleMapsLoader = function(require, onload, config) {
+    this.require_ = require;
+    this.onload_ = onload || NOOP;
+    this.baseUrl_ = config.url || GoogleMapsLoader.DEFAULT_BASE_URL;
+    this.async_ = config.async || async;
+    this.params_ = this.normalizeParams_(config.params);
+  };
 
-    // Do nothing during a build
-    if (opt_config && opt_config.isBuild) {
-      onload(null);
-      return;
+
+  GoogleMapsLoader.prototype.load = function() {
+    if (this.isGoogleMapsLoaded_()) {
+      this.resolveWith_(this.getGlobalGoogleMaps_());
     }
-
-    // Grab default config values
-    config = normalizeConfig_(opt_config);
-
-    // Prevent duplicate loading of google maps
-    isGoogleMapsAlreadyLoaded = root.google && root.google.maps;
-    if (isGoogleMapsAlreadyLoaded) {
-      onload(root.google.maps);
-      return;
+    else {
+      this.loadGoogleMaps_();
     }
+  };
 
-    // Setup async callback
-    // to resolve with google maps
-    onAsyncLoad = function() {
-      resolveWithGoogleMaps_(onload);
+
+  GoogleMapsLoader.prototype.loadGoogleMaps_ = function() {
+    var self = this;
+
+    var onAsyncLoad = function() {
+      // Ensure correct context
+      self.resolveWithGoogleMaps_(self);
     };
-    onAsyncLoad.onerror = onload.onerror;
+    onAsyncLoad.onerror = this.onload_.onerror;
 
-    // Load google maps using async! plugin
-    googleUrl = getGoogleUrl_(config.googlemaps);
-    config.googlemaps.async.load(googleUrl, parentRequire, onAsyncLoad, config);
-  }
+    this.async_.load(this.getGoogleUrl_(), this.require_, onAsyncLoad, {});
+  };
 
 
-  function normalizeConfig_(opt_config) {
-    var config = opt_config || {};
-    config.googlemaps || (config.googlemaps = {});
-    config.googlemaps.url || (config.googlemaps.url = GOOGLE_MAPS_URL);
-    config.googlemaps.params = normalizeParams_(config.googlemaps.params);
-    config.googlemaps.async || (config.googlemaps.async = async);
+  GoogleMapsLoader.prototype.getGoogleUrl_ = function() {
+    return this.baseUrl_ + '?' + this.serializeParams_();
+  };
 
-    return config;
-  }
 
-  function normalizeParams_(params) {
+  GoogleMapsLoader.prototype.resolveWithGoogleMaps_ = function() {
+    if (!this.isGoogleMapsLoaded_()) {
+      this.reject_();
+      return;
+    }
+
+    this.resolveWith_(this.getGlobalGoogleMaps_());
+  };
+
+
+  /** Thanks to http://jsfiddle.net/rudiedirkx/U5Tyb/1/ */
+  GoogleMapsLoader.prototype.serializeParams_ = function() {
+    var encodedParams = [];
+    for (var key in this.params_) {
+      if (this.params_.hasOwnProperty(key)) {
+        var value = this.params_[key];
+        var isObject = (typeof value === 'object');
+        var encodedParam = encodeURIComponent(key) + "=" + encodeURIComponent(value);
+        var serializedValue = isObject ? this.serializeParams_(value, key) : encodedParam;
+
+        encodedParams.push(serializedValue);
+      }
+    }
+
+    return encodedParams.join("&");
+  };
+
+
+  GoogleMapsLoader.prototype.normalizeParams_ = function(params) {
     var defaultParams = {
       sensor: false
     };
     params || (params = {});
 
-    params.sensor = isUndefined_(params.sensor) ? defaultParams.sensor : params.sensor;
+    params.sensor = (params.sensor == void 0) ? defaultParams.sensor : params.sensor;
 
     return params;
-  }
+  };
 
-  function getGoogleUrl_(googleMapsConfig) {
-    return googleMapsConfig.url + '?' + serialize_(googleMapsConfig.params);
-  }
 
-  function resolveWithGoogleMaps_(onload) {
-    var googleMaps;
+  GoogleMapsLoader.prototype.isGoogleMapsLoaded_ = function() {
+    return root.google && root.google.maps;
+  };
 
-    try {
-      googleMaps = getGlobalGoogleMapsLibrary_();
+
+  GoogleMapsLoader.prototype.getGlobalGoogleMaps_ = function() {
+    return root.google ? root.google.maps : undefined;
+  };
+
+
+  GoogleMapsLoader.prototype.resolveWith_ = function(var_args) {
+    this.onload_.apply(root, arguments);
+  };
+
+
+  GoogleMapsLoader.prototype.reject_ = function(opt_error) {
+    var error = opt_error || new Error('Failed to load Google Maps library.');
+
+    if (this.onload_.onerror) {
+      this.onload_.onerror.call(root, error);
     }
-    catch(error) {
-      handleLoadError_(error, onload);
+    else {
+      throw error;
     }
+  };
 
-    onload(googleMaps);
+
+  GoogleMapsLoader.DEFAULT_BASE_URL = 'https://maps.googleapis.com/maps/api/js';
+
+
+  function NOOP() {
   }
 
 
-  function getGlobalGoogleMapsLibrary_() {
-    var google = root.google || {};
-
-    if (!google.maps) {
-      throw new Error('Google maps library failed to load.');
-    }
-
-    return google.maps;
-  }
-
-  /** Thanks to underscore */
-  function isUndefined_(obj) {
-    return obj === void 0;
-  }
-
-  /** Thanks to http://jsfiddle.net/rudiedirkx/U5Tyb/1/ */
-  function serialize_(obj, prefix) {
-    var str = [];
-    for (var p in obj) {
-      if (obj.hasOwnProperty(p)) {
-        var k = prefix ? prefix + "[" + p + "]" : p,
-          v = obj[p];
-        str.push(typeof v == "object" ? serialize_(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
-      }
-    }
-    return str.join("&");
-  }
-
-
-  function handleLoadError_(error, onload) {
-    if (onload.onerror) { onload.onerror(error); }
-    else { throw error; }
-  }
+  return googlemapsPlugin;
 });
