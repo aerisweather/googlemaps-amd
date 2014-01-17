@@ -41,6 +41,12 @@ define([
     var config = normalizeConfig_(opt_config);
     var isGoogleMapsAlreadyLoaded = root.google && root.google.maps;
 
+    // Do nothing during a build
+    if (config.isBuild) {
+      onload(null);
+      return;
+    }
+
     if (isGoogleMapsAlreadyLoaded) {
       onload(root.google.maps);
       return;

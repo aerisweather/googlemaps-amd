@@ -124,6 +124,19 @@ define([
         expect(onErrorArg instanceof Error).toEqual(true);
       });
 
+      it('should resolve with null during a build', function() {
+        config.isBuild = true;
+
+        googlemapsplugin.load('', mockRequire, onload, config);
+
+        expect(onload).toHaveBeenCalledWith(null);
+
+        // Should not have other side effects
+        expect(mockAsync.load).not.toHaveBeenCalled();
+        expect(mockRequire.require).not.toHaveBeenCalled();
+        expect(onload.onerror).not.toHaveBeenCalled();
+      });
+
     });
 
   });
