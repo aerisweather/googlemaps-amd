@@ -2,7 +2,7 @@
   "name": "Google Maps AMD Loader Plugin",
   "description": "Loads the Google maps library as an AMD plugin",
   "keywords": ["google", "maps", "amd", "requirejs"],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": [
     {
       "name": "Edan Schwartz",
