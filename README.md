@@ -20,11 +20,34 @@ The plugin depends on the [async loader plugin](https://github.com/millermedeiro
 ```javascript
 require.config({
   paths: {
-    googlemaps: 'mylib/vendor/amdplugins/googlemaps',
-    async: 'mylib/vendor/amdplugins/async'
+    googlemaps: 'bower_components/googlemaps-amd/src/googlemaps',
+    async: 'bower_components/requirejs-plugins/src/async'
   }
 });
 ```
+
+### Why not use the [async plugin](https://github.com/millermedeiros/requirejs-plugins/)?
+
+The async plugin also allows you to load google maps, like so:
+
+```javascript
+require(['async!http://maps.google.com/maps/api/js?sensor=false'], function() {
+  // google.maps is defined
+});
+```
+
+The googlemaps-amd plugin is essentially a wrapper around the async plugin, which allows an alternate syntax. This snippet does the same thing as the one above:
+
+```javascript
+require(['googlemaps!'], function(googleMaps) {
+  google.maps === googleMaps;   // true
+});
+```
+
+Besides providing a more readable syntax, using the the googlemaps-amd plugin [allows you to configure your google maps API keys (and other parameters) from the RequireJS configuration](#configuration). This is especially useful if you want various consumers of your code to be able to configure their own API keys, without having to modify the source code of your library.
+
+If this is not necessary for your situation, I recommend you do use [the RequireJS async plugin](https://github.com/millermedeiros/requirejs-plugins).
+
 
 ## Install
 
