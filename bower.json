@@ -10,6 +10,7 @@
       "homepage": "http://www.edanschwartz.com"
     }
   ],
+  "license": "BSD-3-Clause",
   "dependencies": {
     "requirejs-plugins": "~1.0.2"
   },
