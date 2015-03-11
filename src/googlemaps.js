@@ -21,7 +21,7 @@ define([
    *  });
    *
    *  require(['googlemaps!'], function(gmaps) {
-   *    var map = new gmaps.map('map-canvas);
+   *    var map = new gmaps.Map('map-canvas);
    *  });
    *
    */
