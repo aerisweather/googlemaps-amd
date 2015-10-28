@@ -1,5 +1,5 @@
 {
-  "name": "Google Maps AMD Loader Plugin",
+  "name": "googlemaps-amd",
   "description": "Loads the Google maps library as an AMD plugin",
   "keywords": ["google", "maps", "amd", "requirejs"],
   "version": "1.0.1",
