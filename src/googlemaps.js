@@ -49,7 +49,7 @@ define([
     this.onload_ = onload || NOOP;
     this.baseUrl_ = config.url || GoogleMapsLoader.DEFAULT_BASE_URL;
     this.async_ = config.async || async;
-    this.params_ = this.normalizeParams_(config.params);
+    this.params_ = config.params;
   };
 
 
@@ -106,18 +106,6 @@ define([
     }
 
     return encodedParams.join("&");
-  };
-
-
-  GoogleMapsLoader.prototype.normalizeParams_ = function(params) {
-    var defaultParams = {
-      sensor: false
-    };
-    params || (params = {});
-
-    params.sensor = (params.sensor == void 0) ? defaultParams.sensor : params.sensor;
-
-    return params;
   };
 
 
