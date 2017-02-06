@@ -1,0 +1,25 @@
+{
+  "name": "googlemaps-amd",
+  "version": "1.0.1",
+  "description": "Loads the Google maps library as an AMD plugin",
+  "homepage": "https://github.com/hamweather/googlemaps-amd#readme",
+  "main": "src/googlemaps.js",
+  "license": "BSD-3-Clause",
+  "contributors": [
+    {
+      "name": "Edan Schwartz",
+      "email": "edan@edanschwartz.com",
+      "homepage": "http://www.edanschwartz.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hamweather/googlemaps-amd.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/hamweather/googlemaps-amd/issues"
+  }
+}
